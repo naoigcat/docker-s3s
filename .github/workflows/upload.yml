@@ -1,0 +1,25 @@
+name: Upload Data
+
+on:
+  schedule:
+    - cron: "0 0-23/6 * * *"
+  workflow_dispatch:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    container:
+      image: naoigcat/s3s:latest
+    env:
+      CONFIG: ${{ secrets.CONFIG }}
+    steps:
+      -
+        name: Generate config.txt
+        working-directory: /opt/s3s
+        run: |
+          echo $CONFIG > /opt/s3s/config.txt
+      -
+        name: Upload Data
+        working-directory: /opt/s3s
+        run: |
+          python3 s3s.py -r
