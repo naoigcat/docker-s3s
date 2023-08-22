@@ -1,4 +1,5 @@
-FROM python:3.11-slim AS build
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim AS build
 ARG REVISION=88929ad072cb04c5d517cd8a5c36236e077ffe75
 WORKDIR /tmp
 RUN apt-get update -y && \
@@ -15,9 +16,10 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
-FROM python:3.11-slim
+FROM python:${PYTHON_VERSION}-slim
 LABEL maintainer="naoigcat <17925623+naoigcat@users.noreply.github.com>"
-COPY --from=build /root/.local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+ARG PYTHON_VERSION
+COPY --from=build /root/.local/lib/python${PYTHON_VERSION}/site-packages /usr/local/lib/python${PYTHON_VERSION}/site-packages
 COPY --from=build /opt/s3s /opt/s3s
 RUN addgroup --system --gid 1000 s3s && \
     adduser --system --gid 1000 --uid 1000 s3s && \
