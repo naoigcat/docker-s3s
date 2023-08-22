@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim-bullseye AS build
+FROM python:3.11-slim-bullseye AS build
 ARG REVISION=88929ad072cb04c5d517cd8a5c36236e077ffe75
 WORKDIR /tmp
 RUN apt-get update -y && \
@@ -15,7 +15,7 @@ RUN apt-get update -y && \
     apt-get clean && \
     rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
-FROM python:3.11.4-slim-bullseye
+FROM python:3.11-slim-bullseye
 LABEL maintainer="naoigcat <17925623+naoigcat@users.noreply.github.com>"
 COPY --from=build /root/.local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=build /opt/s3s /opt/s3s
