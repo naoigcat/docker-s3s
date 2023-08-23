@@ -1,0 +1,34 @@
+name: Bump Version
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_KEY }}
+          fetch-depth: 0
+      -
+        name: Bump
+        run: |
+          export PYTHON_VERSION=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/python/tags?page_size=100" | jq -r ".results[] | select(.name|test(\"^\\\\d+\\\\.\\\\d+$\")) | .name" | sort -V | tail -n 1)
+          export REVISION=$(curl -sSL "https://api.github.com/repos/frozenpandaman/s3s/commits" | jq -r ".[0].sha")
+          export VERSION=$(curl -sSL "https://raw.githubusercontent.com/frozenpandaman/s3s/${REVISION}/s3s.py" | grep "^A_VERSION" | sed -e "s/.*\"\(.*\)\"/\\1/")
+          echo sed -i -e \"s/\\\(PYTHON_VERSION=\\\).*/\\\\1$PYTHON_VERSION/\" Dockerfile | tee /dev/stderr | source /dev/stdin
+          echo sed -i -e \"s/\\\(REVISION=\\\).*/\\\\1$REVISION/\" Dockerfile | tee /dev/stderr | source /dev/stdin
+          if ! git diff --exit-code
+          then
+            echo git config --global user.name \"github-actions[bot]\" | tee /dev/stderr | source /dev/stdin
+            echo git config --global user.email \"github-actions[bot]@users.noreply.github.com\" | tee /dev/stderr | source /dev/stdin
+            echo git commit -am \"Bump version to ${VERSION} at ${REVISION} with Python ${PYTHON_VERSION}\" | tee /dev/stderr | source /dev/stdin
+            echo git tag \"${VERSION}-python${PYTHON_VERSION}-${REVISION}\" | tee /dev/stderr | source /dev/stdin
+            echo git push | tee /dev/stderr | source /dev/stdin
+            echo git push --tags | tee /dev/stderr | source /dev/stdin
+          fi

@@ -24,6 +24,10 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/s3s
+          tags: |
+            type=ref,event=tag,priority=900
+            type=match,pattern=\d+\.\d+.\d+-python\d+\.\d+,priority=850
+            type=match,pattern=\d+\.\d+.\d+,priority=800
       -
         name: Login
         uses: docker/login-action@v2
