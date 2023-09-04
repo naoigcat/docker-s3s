@@ -24,7 +24,7 @@ Generating new config file.
 s3s v0.5.2
 stat.ink API key: *******************************************
 Default locale is en-US. Press Enter to accept, or enter your own (see readme for list).
-js-JP
+ja-JP
 Blank token(s).
 Please log in to your Nintendo Account to obtain your session_token.
 
@@ -53,10 +53,9 @@ Validating your tokens... done.
 
 6.  Copy the link address of the "Select this account"
 
-### Upload data
+### Upload data manually
 
 ```sh
-$ echo $CONFIG > config.txt
 $ docker run --rm -it -v $PWD/config.txt:/opt/s3s/config.txt naoigcat/s3s -r
 s3s v0.5.2
 Validating your tokens... done.
@@ -68,6 +67,24 @@ Previously-unuploaded jobs detected. Uploading now...
 Job uploaded to https://stat.ink/@xxxxxxxx/salmon3/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-1.  Make a config.txt
+1.  Run `docker` command
 
-2.  Run `docker` command
+### Upload data automatically
+
+1.  Open the repository on Github
+
+2.  Open Settings > Security > Secrets and variables > Actions
+
+3.  New repository secret
+
+    -   Name: `CONFIG`
+
+    -   Secret: the content of config.txt
+
+4.  Open Settings > Code and automation > Actions > General
+
+5.  Select "Allow `{username}`, and select non-`{username}`, actions and reusable workflows" in Actions permissions
+
+6.  Check "Allow actions created by GitHub"
+
+7.  Check "Allow actions by Marketplace verified creators"
