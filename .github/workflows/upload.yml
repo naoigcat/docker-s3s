@@ -16,10 +16,12 @@ jobs:
       -
         name: Generate config.txt
         working-directory: /opt/s3s
+        if: env.CONFIG != ''
         run: |
           echo $CONFIG > /opt/s3s/config.txt
       -
         name: Upload Data
         working-directory: /opt/s3s
+        if: env.CONFIG != ''
         run: |
           python3 s3s.py -r
