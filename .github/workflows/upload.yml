@@ -24,4 +24,8 @@ jobs:
         working-directory: /opt/s3s
         if: env.CONFIG != ''
         run: |
-          python3 s3s.py -r
+          wait_time=60
+          until python3 s3s.py -r || test $wait_time -eq 180
+          do
+            sleep $(( wait_time += 60 ))
+          done
