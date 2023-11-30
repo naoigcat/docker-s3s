@@ -19,7 +19,15 @@ jobs:
       -
         name: Bump
         run: |
-          export PYTHON_VERSION=$(curl -sSL "https://registry.hub.docker.com/v2/repositories/library/python/tags?page_size=100" | jq -r ".results[] | select(.name|test(\"^\\\\d+\\\\.\\\\d+$\")) | .name" | sort -V | tail -n 1)
+          url="https://registry.hub.docker.com/v2/repositories/library/python/tags?page=1&page_size=100"
+          while test "$url" != "null"
+          do
+            response=$(curl -sSL "$url")
+            echo $response | jq -r ".results[].name" >> names
+            url=$(echo $response | jq -r ".next")
+            sleep 1
+          done
+          export PYTHON_VERSION=$(grep -P "^\d+.\d+$" names | sort -V | tail -n 1)
           export REVISION=$(curl -sSL "https://api.github.com/repos/frozenpandaman/s3s/commits" | jq -r ".[0].sha")
           export VERSION=$(curl -sSL "https://raw.githubusercontent.com/frozenpandaman/s3s/${REVISION}/s3s.py" | grep "^A_VERSION" | sed -e "s/.*\"\(.*\)\"/\\1/")
           echo sed -i -e \"s/\\\(PYTHON_VERSION=\\\).*/\\\\1$PYTHON_VERSION/\" Dockerfile | tee /dev/stderr | source /dev/stdin
