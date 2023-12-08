@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION=3.12
 FROM python:${PYTHON_VERSION}-slim AS build
-ARG REVISION=2523df7fcbcd4a08a99526ea4f06075eed61dada
+ARG REVISION=da6829b7826a46c33530f48d5043a98484c56203
 WORKDIR /tmp
 RUN apt-get update -y && \
     apt-get install -y \
